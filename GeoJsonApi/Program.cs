@@ -10,10 +10,9 @@ builder.Services.AddControllers();
 
 builder.Services.AddCors(setup => setup.AddDefaultPolicy(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin()));
 
-builder.Services.AddDbContext<GeoJsonDbContext>(options =>
+builder.Services.AddDbContext<SpatialDataContext>(options =>
  options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
  o => o.UseNetTopologySuite()));
-
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
