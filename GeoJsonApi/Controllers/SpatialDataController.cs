@@ -48,7 +48,7 @@ namespace GeoJsonApi.Controllers
 
             foreach (var spatialData in spatialDataList)
             {
-                _context.SpatialDatas.Add(spatialData);
+                _context.spatialdatas.Add(spatialData);
             }
             _context.SaveChanges();
 
