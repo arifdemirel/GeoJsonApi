@@ -10,7 +10,7 @@ namespace GeoJsonApi.Data
 
         }
 
-        public DbSet<SpatialData> SpatialDatas { get; set; }
+        public DbSet<SpatialData> spatialdatas { get; set; }
 
 
     }

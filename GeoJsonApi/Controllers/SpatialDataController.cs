@@ -42,7 +42,6 @@ namespace GeoJsonApi.Controllers
                 spatialDataList.Add(spatialData);
             }
 
-
             //var spatialData = new SpatialData { Geometry = geometry };
             //_context.SpatialDatas.Add(spatialData);
             //_context.SaveChanges();
