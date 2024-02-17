@@ -12,6 +12,6 @@ namespace GeoJsonApi.Data
 
         public DbSet<SpatialData> spatialdatas { get; set; }
 
-
+        
     }
 }
