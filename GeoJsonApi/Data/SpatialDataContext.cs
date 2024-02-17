@@ -1,9 +1,10 @@
 ﻿using GeoJsonApi.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace GeoJsonApi.Data
 {
-    public class SpatialDataContext : DbContext
+    public class SpatialDataContext : IdentityDbContext
     {
         public SpatialDataContext(DbContextOptions<SpatialDataContext> options) : base(options)
         {
