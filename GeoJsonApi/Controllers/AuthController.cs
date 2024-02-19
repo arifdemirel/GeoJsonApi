@@ -36,7 +36,7 @@ namespace GeoJsonApi.Controllers
                 return BadRequest("User already exists.");
             }
 
-            IdentityUser user = new IdentityUser
+            IdentityUser user = new()
             {
                 Email = model.Email,
                 UserName = model.Email
@@ -62,7 +62,7 @@ namespace GeoJsonApi.Controllers
                 // User authenticated, now generate JWT
                 var token = JwtTokenGenerator.GenerateToken(user.UserName, _configuration["Jwt:Key"], _configuration["Jwt:Issuer"], _configuration["Jwt:Audience"], 120);
 
-                return Ok(new { token = token });
+                return Ok(new { token });
             }
 
             return Unauthorized("Failed to login.");

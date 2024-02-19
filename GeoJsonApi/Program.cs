@@ -19,7 +19,7 @@ builder.Services.AddDbContext<SpatialDataContext>(options =>
  o => o.UseNetTopologySuite()));
 
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options =>options.SignIn.RequireConfirmedAccount = false).AddEntityFrameworkStores<SpatialDataContext>();
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false).AddRoles<IdentityRole>().AddEntityFrameworkStores<SpatialDataContext>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

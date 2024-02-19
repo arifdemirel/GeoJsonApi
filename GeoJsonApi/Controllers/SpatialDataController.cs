@@ -1,39 +1,44 @@
 ﻿using GeoJsonApi.Data;
 using GeoJsonApi.Models;
+//using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
+using System.Net;
 using System.Text.Json;
 
 
 namespace GeoJsonApi.Controllers
 {
-    
+    //[Authorize("User,Admin,Tester")]
     [Route("api/[controller]")]
     [ApiController]
     public class SpatialDataController : ControllerBase
     {
-        private readonly SpatialDataContext _context;    
-
+        private readonly SpatialDataContext _context;
         private readonly static WKTReader _wktReader = new(new NtsGeometryServices(new PrecisionModel(), 4326));
         private readonly static WKTWriter _wktWriter = new();
+
+        private ApiResponse _response;
 
         public SpatialDataController(SpatialDataContext context)
         {
             _context = context;
-
+            _response = new ApiResponse();
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<string>>> GetAll()
         {
             var spatialDatas = await _context.spatialdatas.ToListAsync();
-                                                            //ToListAsync();
+
             var wktList = spatialDatas.Select(data => _wktWriter.Write(data.Geometry)).ToList();
 
-            return Ok(wktList);
+            _response.Result = wktList;
+            _response.StatusCode = HttpStatusCode.OK;
+            return Ok(_response);
         }
 
 
@@ -47,11 +52,11 @@ namespace GeoJsonApi.Controllers
             {
                 return NotFound();
             }
-
             // Convert the Geometry to WKT
             string wkt = _wktWriter.Write(spatialData.Geometry);
-
-            return Ok(wkt);
+            _response.Result = wkt;
+            _response.StatusCode = HttpStatusCode.OK;
+            return Ok(_response);
         }
 
 
