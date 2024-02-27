@@ -1,115 +1,134 @@
-﻿using GeoJsonApi.Data;
-using GeoJsonApi.Models;
+﻿using WktApi.Data;
+using WktApi.Models;
 //using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NetTopologySuite;
-using NetTopologySuite.Geometries;
-using NetTopologySuite.IO;
-using System.Net;
-using System.Text.Json;
+using WktApi.Extension;
+using WktApi.Models.Dto;
 
 
-namespace GeoJsonApi.Controllers
+namespace WktApi.Controllers
 {
-    //[Authorize("User,Admin,Tester")]
     [Route("api/[controller]")]
     [ApiController]
     public class SpatialDataController : ControllerBase
     {
-        private readonly SpatialDataContext _context;
-        private readonly static WKTReader _wktReader = new(new NtsGeometryServices(new PrecisionModel(), 4326));
-        private readonly static WKTWriter _wktWriter = new();
+        private readonly SDContext _context;
 
-        private ApiResponse _response;
-
-        public SpatialDataController(SpatialDataContext context)
+        public SpatialDataController(SDContext context)
         {
             _context = context;
-            _response = new ApiResponse();
-        }
-
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<string>>> GetAll()
-        {
-            var spatialDatas = await _context.spatialdatas.ToListAsync();
-
-            var wktList = spatialDatas.Select(data => _wktWriter.Write(data.Geometry)).ToList();
-
-            _response.Result = wktList;
-            _response.StatusCode = HttpStatusCode.OK;
-            return Ok(_response);
-        }
-
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
-        {
-            // Retrieve the spatial data entity by id
-            var spatialData = await _context.spatialdatas.FindAsync(id);
-
-            if (spatialData == null)
-            {
-                return NotFound();
-            }
-            // Convert the Geometry to WKT
-            string wkt = _wktWriter.Write(spatialData.Geometry);
-            _response.Result = wkt;
-            _response.StatusCode = HttpStatusCode.OK;
-            return Ok(_response);
         }
 
 
         [HttpPost]
-        public IActionResult Post([FromBody] JsonElement jsonElement)
+        public async Task<IActionResult> AddGeometry([FromBody] GeomInputModel inputModel)
         {
-            try
-            {
-                // Now _wktReader is accessible here
-                if (jsonElement.TryGetProperty("wkt", out JsonElement wktElement) && wktElement.GetString() is string wkt)
-                {
-                    Geometry geometry = _wktReader.Read(wkt);
-                    var spatialData = new SpatialData
-                    {
-                        Geometry = geometry
-                    };
 
-                    _context.spatialdatas.Add(spatialData);
-                    _context.SaveChanges();
 
-                    return Ok();
-                }
-                else
-                {
-                    return BadRequest("The 'wkt' field is required.");
-                }
-            }
-            catch (Exception ex)
+            if (inputModel == null || string.IsNullOrWhiteSpace(inputModel.Wkt))
             {
-                return BadRequest(ex.Message);
+                return BadRequest("Invalid input");
             }
+
+            var geometry = inputModel.Wkt.WktToGeometry();
+            if (geometry == null)
+            {
+                return BadRequest("Invalid WKT string");
+            }
+
+            var spatialData = new SpatialData
+            {
+
+                Geometry = geometry
+            };
+
+
+            _context.spatialdatas.Add(spatialData);
+            await _context.SaveChangesAsync();
+
+            return Ok(spatialData);
+        }
+
+        [HttpPost("AddSampleGeometries")]
+        public async Task<IActionResult> AddSampleGeometries()
+        {
+
+            var pointWkt = "POINT (30 10)";
+            var pointGeometry = pointWkt.WktToGeometry();
+
+            var pointSpatialData = new SpatialData
+            {
+                Geometry = pointGeometry
+            };
+
+            _context.spatialdatas.Add(pointSpatialData);
+
+
+            var polygonWkt = "POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))";
+            var polygonGeometry = polygonWkt.WktToGeometry();
+
+            var polygonSpatialData = new SpatialData
+            {
+                Geometry = polygonGeometry
+            };
+
+            _context.spatialdatas.Add(polygonSpatialData);
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Sample geometries added successfully." });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var geometries = await _context.spatialdatas.Select(s => new GeomOutputModel
+            {
+                Id = s.Id,
+                Wkt = s.Geometry.ToText()
+            })
+                .ToListAsync();
+
+            return Ok(geometries);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var geometry = await _context.spatialdatas
+                .Where(s => s.Id == id)
+                .Select(s => new GeomOutputModel
+                {
+                    Id = s.Id,
+                    Wkt = s.Geometry
+                .ToText()
+                })
+                .FirstOrDefaultAsync();
+
+            if (geometry == null)
+            {
+                return NotFound($"Geometry with the ID: {id} not found!");
+            }
+
+            return Ok(geometry);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            // Find the spatial data by id
             var spatialData = await _context.spatialdatas.FindAsync(id);
             if (spatialData == null)
             {
-                // If not found, return a 404 Not Found response
-                return NotFound();
+                return NotFound(new { message = $"Geometry with ID {id} was not found." });
             }
 
-            // If found, remove the spatial data from the context
             _context.spatialdatas.Remove(spatialData);
-
-            // Save changes to the database
             await _context.SaveChangesAsync();
 
-            // Return a 200 OK response
-            return Ok();
+            return Ok(new { message = $"Geometry with Id:{id} was successfully deleted." });
         }
+
     }
 }
 

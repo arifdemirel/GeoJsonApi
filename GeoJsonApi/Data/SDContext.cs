@@ -1,13 +1,13 @@
-﻿using GeoJsonApi.Models;
+﻿using WktApi.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace GeoJsonApi.Data
+namespace WktApi.Data
 {
-    public class SpatialDataContext : IdentityDbContext<ApplicationUser, IdentityRole, string>
+    public class SDContext : IdentityDbContext<ApplicationUser, IdentityRole, string>
     {
-        public SpatialDataContext(DbContextOptions<SpatialDataContext> options) : base(options)
+        public SDContext(DbContextOptions<SDContext> options) : base(options)
         {
 
         }

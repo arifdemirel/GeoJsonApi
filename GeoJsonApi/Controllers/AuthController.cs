@@ -1,10 +1,10 @@
-﻿using GeoJsonApi.Extension;
-using GeoJsonApi.Models.Dto;
+﻿using WktApi.Extension;
+using WktApi.Models.Dto;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Configuration;
 
-namespace GeoJsonApi.Controllers
+namespace WktApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

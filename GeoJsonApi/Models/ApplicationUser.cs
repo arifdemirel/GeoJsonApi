@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace GeoJsonApi.Models
+namespace WktApi.Models
 {
     public class ApplicationUser : IdentityUser
     {

@@ -1,4 +1,4 @@
-﻿namespace GeoJsonApi.Models.Dto
+﻿namespace WktApi.Models.Dto
 {
     public class LoginDto
     {

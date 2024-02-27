@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace GeoJsonApi.Migrations
+namespace WktApi.Migrations
 {
     /// <inheritdoc />
     public partial class DbNameChange : Migration

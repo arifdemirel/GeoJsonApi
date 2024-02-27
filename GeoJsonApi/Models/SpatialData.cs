@@ -1,6 +1,6 @@
 ﻿using NetTopologySuite.Geometries;
 
-namespace GeoJsonApi.Models
+namespace WktApi.Models
 {
     public class SpatialData
     {
