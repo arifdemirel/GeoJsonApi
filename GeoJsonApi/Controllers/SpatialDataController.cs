@@ -25,37 +25,42 @@ namespace WktApi.Controllers
         [HttpPost]
         public async Task<IActionResult> AddGeometry([FromBody] GeomInputModel inputModel)
         {
-
-
             if (inputModel == null || string.IsNullOrWhiteSpace(inputModel.Wkt))
             {
                 return BadRequest("Invalid input");
             }
 
-            var geometry = inputModel.Wkt.WktToGeometry();
-            if (geometry == null)
+            try
             {
-                return BadRequest("Invalid WKT string");
+                var geometry = inputModel.Wkt.WktToGeometry();
+                if (geometry == null)
+                {
+                    return BadRequest("Invalid WKT string");
+                }
+
+                var spatialData = new SpatialData
+                {
+                    Geometry = geometry
+                };
+
+                _context.spatialdatas.Add(spatialData);
+                await _context.SaveChangesAsync();
+
+                var result = new SpatialDataDto
+                {
+                    Id = spatialData.Id,
+                    Wkt = spatialData.Geometry?.ToText()
+                };
+
+                return Ok(result);
             }
-
-            var spatialData = new SpatialData
+            catch (Exception ex)
             {
 
-                Geometry = geometry
-            };
-
-
-            _context.spatialdatas.Add(spatialData);
-            await _context.SaveChangesAsync();
-
-            var result = new SpatialDataDto
-            {
-                Id = spatialData.Id,
-                Wkt = spatialData.Geometry?.ToText()
-            };
-
-            return Ok(result);
+                return StatusCode(500, $"An error occurred while processing your request: {ex.Message}");
+            }
         }
+
 
         [HttpPost("AddSampleGeometries")]
         public async Task<IActionResult> AddSampleGeometries()
