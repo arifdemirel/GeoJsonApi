@@ -48,7 +48,13 @@ namespace WktApi.Controllers
             _context.spatialdatas.Add(spatialData);
             await _context.SaveChangesAsync();
 
-            return Ok(spatialData);
+            var result = new SpatialDataDto
+            {
+                Id = spatialData.Id,
+                Wkt = spatialData.Geometry?.ToText()
+            };
+
+            return Ok(result);
         }
 
         [HttpPost("AddSampleGeometries")]
