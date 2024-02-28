@@ -1,8 +1,8 @@
-﻿using WktApi.Extension;
-using WktApi.Models.Dto;
+﻿using WktApi.Models.Dto;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Configuration;
+using WktApi.Extensions;
+
 
 namespace WktApi.Controllers
 {

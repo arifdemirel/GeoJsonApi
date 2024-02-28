@@ -4,7 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace WktApi.Extension
+namespace WktApi.Extensions
 {
     public static class JwtTokenGenerator
     {

@@ -3,8 +3,9 @@ using WktApi.Models;
 //using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WktApi.Extension;
+using WktApi.Extensions;
 using WktApi.Models.Dto;
+using NetTopologySuite.IO;
 
 
 namespace WktApi.Controllers
@@ -64,8 +65,29 @@ namespace WktApi.Controllers
 
             _context.spatialdatas.Add(pointSpatialData);
 
+            Random rnd = new();
 
-            var polygonWkt = "POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))";
+
+            int minX = 0, maxX = 181;
+            int minY = 0, maxY = 181;
+            int iteration = rnd.Next(3, 10);
+
+            string[] coordinates = new string[iteration];
+
+            var wktBuilder = new WKTWriter();
+
+            for (int i = 0; i < iteration; i++)
+            {
+                int x = rnd.Next(minX, maxX);
+                int y = rnd.Next(minY, maxY);
+
+
+                coordinates[i] = $"{x}{y}";
+            }
+
+            var polygonWkt = $"POLYGON((" + string.Join(",", coordinates) + "))";
+
+            //var polygonWkt = $"POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))";
             var polygonGeometry = polygonWkt.WktToGeometry();
 
             var polygonSpatialData = new SpatialData

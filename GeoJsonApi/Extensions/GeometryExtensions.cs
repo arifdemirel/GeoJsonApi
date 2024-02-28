@@ -2,7 +2,7 @@
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
 
-namespace WktApi.Extension
+namespace WktApi.Extensions
 {
     public static class GeometryExtensions
     {
